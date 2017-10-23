@@ -15,9 +15,12 @@
  *
  * Author: Gris Ge <fge@redhat.com>
  */
-extern crate libnvme;
 
-fn main() {
-    let c = libnvme::controller::from_path("/dev/nvme0");
-    println!("SN: '{}'", c.sn);
-}
+#![crate_type = "lib"]
+#![crate_name = "libnvme"]
+
+#[macro_use]
+extern crate nix;
+
+pub mod controller;
+mod ioctl;
