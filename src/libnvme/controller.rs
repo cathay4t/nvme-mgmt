@@ -18,12 +18,13 @@
 
 use ioctl::nvme_ioctl_admin_cmd;
 use std::path::Path;
-use std::str::from_utf8;
-use std::error::Error;
 use std::fs::OpenOptions;
 use std::os::unix::io::AsRawFd;
 use std::mem::size_of;
 use ioctl::NvmeAdminCmd;
+use std::str;
+use error::*;
+use byteorder::{ByteOrder, LittleEndian};
 
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
@@ -225,18 +226,99 @@ impl Default for NvmeSpecIdCtrlData {
 const NVME_IOC_CMD_IDENTIFY: u8 = 0x06;
 const NVME_ADMIN_CMD_CNS_ALL_CTRL: u32 = 0x01;
 
-#[derive(Debug)]
 pub struct NvmeController {
-    pub sn:             String,
+    raw_id_data:             NvmeSpecIdCtrlData,
+    // Converting u8 array to utf8 might have error which we don't want to
+    // trigger during getter function, hence we creat them at struct
+    // initialize pharse.
+    sn:                         String,
+    mn:                         String,
+    fr:                         String,
+    fguid:                      String,
+    subnqn:                     String,
 }
 
-pub fn from_path(blk_path: &str) -> NvmeController {
+fn to_u16(i: [u8; 2]) -> u16 {
+    LittleEndian::read_u16(&i)
+}
+
+fn to_u32_a3(i: [u8; 3]) -> u32 {
+    let mut n = [0u8; 4];
+    n[..3].clone_from_slice(&i);
+    LittleEndian::read_u32(&n)
+}
+
+fn to_u32(i: [u8; 4]) -> u32 {
+    LittleEndian::read_u32(&i)
+}
+
+impl NvmeController {
+    pub fn get_vid(&self)       -> u16  { to_u16(self.raw_id_data.vid) }
+    pub fn get_ssvid(&self)     -> u16  { to_u16(self.raw_id_data.ssvid) }
+    pub fn get_sn(&self)        -> &str { & self.sn }
+    pub fn get_mn(&self)        -> &str { & self.mn }
+    pub fn get_fr(&self)        -> &str { & self.fr }
+    pub fn get_rab(&self)       -> u8   { self.raw_id_data.rab }
+    pub fn get_ieee(&self)      -> u32 { to_u32_a3(self.raw_id_data.ieee) }
+    pub fn get_cmic(&self)      -> u8 { self.raw_id_data.cmic }
+    pub fn get_mdts(&self)      -> u8 { self.raw_id_data.mdts }
+    pub fn get_cntlid(&self)    -> u16 { to_u16(self.raw_id_data.cntlid) }
+    pub fn get_ver(&self)       -> u32 { to_u32(self.raw_id_data.ver) }
+    pub fn get_rtd3r(&self)     -> u32 { to_u32(self.raw_id_data.rtd3e) }
+    pub fn get_rtd3e(&self)     -> u32 { to_u32(self.raw_id_data.rtd3r) }
+    pub fn get_oaes(&self)      -> u32 { to_u32(self.raw_id_data.oaes) }
+    pub fn get_ctratt(&self)    -> u32 { to_u32(self.raw_id_data.ctratt) }
+    pub fn get_fguid(&self)     -> &str { & self.fguid }
+    pub fn get_oacs(&self)      -> u16 { to_u16(self.raw_id_data.oacs) }
+    pub fn get_acl(&self)       -> u8 { self.raw_id_data.acl }
+    pub fn get_aerl(&self)      -> u8 { self.raw_id_data.aerl }
+    pub fn get_frmw(&self)      -> u8 { self.raw_id_data.frmw }
+    pub fn get_lpa(&self)       -> u8 { self.raw_id_data.lpa }
+    pub fn get_elpe(&self)      -> u8 { self.raw_id_data.elpe }
+    pub fn get_npss(&self)      -> u8 { self.raw_id_data.npss }
+    pub fn get_avscc(&self)     -> u8 { self.raw_id_data.avscc }
+    pub fn get_apsta(&self)     -> u8 { self.raw_id_data.apsta }
+    pub fn get_wctemp(&self)    -> u16 { to_u16(self.raw_id_data.wctemp) }
+    pub fn get_cctemp(&self)    -> u16 { to_u16(self.raw_id_data.cctemp) }
+    pub fn get_mtfa(&self)      -> u16 { to_u16(self.raw_id_data.mtfa) }
+    pub fn get_hmpre(&self)     -> u32 { to_u32(self.raw_id_data.hmpre) }
+    pub fn get_hmmin(&self)     -> u32 { to_u32(self.raw_id_data.hmmin) }
+    pub fn get_tnvmcap(&self)   -> &[u8; 16] { &self.raw_id_data.tnvmcap }
+    pub fn get_unvmcap(&self)   -> &[u8; 16] { &self.raw_id_data.unvmcap }
+    pub fn get_rpmbs(&self)     -> u32 { to_u32(self.raw_id_data.rpmbs) }
+    pub fn get_edstt(&self)     -> u16 { to_u16(self.raw_id_data.edstt) }
+    pub fn get_esto(&self)      -> u8 { self.raw_id_data.esto }
+    pub fn get_fwug(&self)      -> u8 { self.raw_id_data.fwug }
+    pub fn get_kas(&self)       -> u16 { to_u16(self.raw_id_data.kas) }
+    pub fn get_hctma(&self)     -> u16 { to_u16(self.raw_id_data.hctma) }
+    pub fn get_mntmt(&self)     -> u16 { to_u16(self.raw_id_data.mntmt) }
+    pub fn get_mxtmt(&self)     -> u16 { to_u16(self.raw_id_data.mxtmt) }
+    pub fn get_sanicap(&self)   -> u32 { to_u32(self.raw_id_data.sanicap) }
+    pub fn get_sqes(&self)      -> u8 { self.raw_id_data.sqes }
+    pub fn get_cqes(&self)      -> u8 { self.raw_id_data.cqes }
+    pub fn get_maxcmd(&self)    -> u16 { to_u16(self.raw_id_data.maxcmd) }
+    pub fn get_nn(&self)        -> u32 { to_u32(self.raw_id_data.nn) }
+    pub fn get_oncs(&self)      -> u16 { to_u16(self.raw_id_data.oncs) }
+    pub fn get_fuses(&self)     -> u16 { to_u16(self.raw_id_data.fuses) }
+    pub fn get_fna(&self)       -> u8 { self.raw_id_data.fna }
+    pub fn get_vwc(&self)       -> u8 { self.raw_id_data.vwc }
+    pub fn get_awun(&self)      -> u16 { to_u16(self.raw_id_data.awun) }
+    pub fn get_awupf(&self)     -> u16 { to_u16(self.raw_id_data.awupf) }
+    pub fn get_nvscc(&self)     -> u8 { self.raw_id_data.nvscc }
+    pub fn get_acwu(&self)      -> u16 { to_u16(self.raw_id_data.acwu) }
+    pub fn get_sgls(&self)      -> u32 { to_u32(self.raw_id_data.sgls) }
+    pub fn get_subnqn(&self)    -> &str { & self.subnqn }
+    pub fn get_ioccsz(&self)    -> u32 { to_u32(self.raw_id_data.ioccsz) }
+    pub fn get_iorcsz(&self)    -> u32 { to_u32(self.raw_id_data.iorcsz) }
+    pub fn get_icdoff(&self)    -> u16 { to_u16(self.raw_id_data.icdoff) }
+    pub fn get_ctrattr(&self)   -> u8 { self.raw_id_data.ctrattr }
+    pub fn get_msdbd(&self)     -> u8 { self.raw_id_data.msdbd }
+}
+
+pub fn from_path(blk_path: &str) -> Result<NvmeController> {
     let path =  Path::new(blk_path);
 
-    let fd = match OpenOptions::new().read(true).open(&path) {
-        Err(why) => panic!("failed to open: {}", why.description()),
-        Ok(fd) => fd,
-    };
+    let fd = OpenOptions::new().read(true).open(&path)?;
 
     let fd_raw: i32 = AsRawFd::as_raw_fd(&fd);
     let mut id_data: NvmeSpecIdCtrlData = Default::default();
@@ -249,18 +331,14 @@ pub fn from_path(blk_path: &str) -> NvmeController {
         ..                  Default::default()
     };
 
-    unsafe {
-        match nvme_ioctl_admin_cmd(fd_raw, &mut [nvme_cmd]) {
-            Err(why) => panic!("ioctl failed: {}", why.description()),
-            Ok(_) => (),
-        };
-    }
-    let sn = match from_utf8(&id_data.sn) {
-        Err(why) => panic!("failed to convert vec to utf8: {}",
-                           why.description()),
-        Ok(sn) => sn,
-    };
-    return NvmeController {
-        sn: sn.trim().to_string(),
-    };
+    unsafe {nvme_ioctl_admin_cmd(fd_raw, &mut [nvme_cmd])?;}
+    Ok(
+        NvmeController {
+            sn:             str::from_utf8(&id_data.sn)?.trim().to_string(),
+            mn:             str::from_utf8(&id_data.mn)?.trim().to_string(),
+            fr:             str::from_utf8(&id_data.fr)?.trim().to_string(),
+            fguid:          str::from_utf8(&id_data.fguid)?.trim().to_string(),
+            subnqn:         str::from_utf8(&id_data.subnqn)?.trim().to_string(),
+            raw_id_data:    id_data,
+        })
 }

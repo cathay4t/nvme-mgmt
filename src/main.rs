@@ -18,6 +18,13 @@
 extern crate libnvme;
 
 fn main() {
-    let c = libnvme::controller::from_path("/dev/nvme0");
-    println!("SN: '{}'", c.sn);
+    let c = libnvme::controller::from_path("/dev/nvme0").unwrap();
+    println!("VID: '{}'", c.get_vid());
+    println!("SN: '{}'", c.get_sn());
+    println!("MN: '{}'", c.get_mn());
+    println!("FR: '{}'", c.get_fr());
+    println!("RAB: '{}'", c.get_rab());
+    println!("IEEE: '{}'", c.get_ieee());
+    println!("FGUID: '{}'", c.get_fguid());
+    println!("SUBNQN: '{}'", c.get_subnqn());
 }

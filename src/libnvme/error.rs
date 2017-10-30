@@ -16,15 +16,19 @@
  * Author: Gris Ge <fge@redhat.com>
  */
 
-#![crate_type = "lib"]
-#![crate_name = "libnvme"]
+error_chain! {
+    errors {
+        LibBug(msg: String) {
+            description("Library bug")
+            display("Library bug: '{}'", msg)
+        }
+    }
 
-#[macro_use]
-extern crate nix;
-#[macro_use]
-extern crate error_chain;
-extern crate byteorder;
-
-pub mod error;
-pub mod controller;
-mod ioctl;
+    // TODO(Gris Ge): Should use From to map everthing into LibBug
+    foreign_links {
+        FromUtf8Error(::std::string::FromUtf8Error);
+        Utf8Error(::std::str::Utf8Error);
+        NixError(::nix::Error);
+        IoError(::std::io::Error);
+    }
+}
