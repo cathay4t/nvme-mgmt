@@ -1,8 +1,15 @@
 # nvme-mgmt
 WIP: NVMe management interface and tools
 
-## Plan
- * C library -- libnvme.so written in RUST.
- * Python binding of libnvme
- * CLI `pnm` using python module
- * TBD: RUST binding of libnvme and CLI `rnm`.
+## Features
+ * Rust create 'nvme-mgmt' with CLI and lib.
+ * C library -- libnvme.so and libnvme.h
+ * TODO: Python binding of libnvme
+
+## Compile and Test
+
+```bash
+make
+# The 'make check' will run against /dev/nvme0 for now.
+make check
+```
