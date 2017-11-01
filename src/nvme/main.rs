@@ -15,10 +15,10 @@
  *
  * Author: Gris Ge <fge@redhat.com>
  */
-extern crate libnvme;
+extern crate nvme;
 
 fn main() {
-    let c = libnvme::controller::from_path("/dev/nvme0").unwrap();
+    let c = nvme::controller::from_path("/dev/nvme0").unwrap();
     println!("VID: '{}'", c.get_vid());
     println!("SN: '{}'", c.get_sn());
     println!("MN: '{}'", c.get_mn());

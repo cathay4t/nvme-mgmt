@@ -1,13 +1,5 @@
-[package]
-name = "nvme-mgmt"
-version = "0.1.0"
-authors = ["Gris Ge <fge@redhat.com>"]
-
-[lib]
-name = "libnvme"
-path = "src/libnvme/lib.rs"
-
-[dependencies]
-nix = "0.9.0"
-error-chain = "0.11.0"
-byteorder = "1.1.0"
+[workspace]
+members = [
+    "src/nvme",
+    "src/libnvme_for_c",
+]

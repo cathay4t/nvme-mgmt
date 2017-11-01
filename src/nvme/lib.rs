@@ -16,14 +16,12 @@
  * Author: Gris Ge <fge@redhat.com>
  */
 
-#![crate_type = "lib"]
-#![crate_name = "libnvme"]
-
 #[macro_use]
 extern crate nix;
 #[macro_use]
 extern crate error_chain;
 extern crate byteorder;
+extern crate libc;
 
 pub mod error;
 pub mod controller;

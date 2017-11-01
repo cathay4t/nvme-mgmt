@@ -1,0 +1,19 @@
+[package]
+name = "nvme-mgmt"
+version = "0.1.0"
+authors = ["Gris Ge <fge@redhat.com>"]
+
+[lib]
+name = "nvme"
+path = "lib.rs"
+crate-type = ["lib"]
+
+[[bin]]
+name = "nvme-mgmt"
+path = "main.rs"
+
+[dependencies]
+nix = "0.9.0"
+error-chain = "0.11.0"
+byteorder = "1.1.0"
+libc = "0.2.32"
