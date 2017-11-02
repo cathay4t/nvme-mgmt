@@ -34,6 +34,8 @@ void nvme_ctrl_free(struct nvme_ctrl *cnt);
 
 const char *nvme_ctrl_sn_get(struct nvme_ctrl *cnt);
 
+void nvme_err_msg_free(char *err_msg);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

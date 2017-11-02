@@ -81,3 +81,10 @@ pub extern fn nvme_ctrl_sn_get(cnt: *mut NvmeCtrlC) -> *const c_char {
     };
     cnt.sn
 }
+
+#[no_mangle]
+pub extern fn nvme_err_msg_free(err_msg: *mut c_char) {
+    unsafe {
+        libc::free(err_msg as *mut libc::c_void);
+    }
+}

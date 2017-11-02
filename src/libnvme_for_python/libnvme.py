@@ -35,6 +35,8 @@ lib.nvme_ctrl_free.argtypes = (POINTER(_NvmeCtrlC),)
 lib.nvme_ctrl_sn_get.restype = c_char_p
 lib.nvme_ctrl_sn_get.argtypes = (POINTER(_NvmeCtrlC),)
 
+lib.nvme_err_msg_free.restype = c_char_p
+lib.nvme_err_msg_free.argtypes = None
 
 class NvmeError(Exception):
     NVME_OK = 0
@@ -55,7 +57,9 @@ class NvmeCtrl(object):
         err_msg = c_char_p()
         rc = lib.nvme_ctrl_get(dev_path, byref(c_obj), byref(err_msg))
         if rc != NvmeError.NVME_OK:
-            raise NvmeError(rc, err_msg.value)
+            e = NvmeError(rc, err_msg.value)
+            lib.nvme_err_msg_free(err_msg)
+            raise e
         self.sn = lib.nvme_ctrl_sn_get(c_obj)
         self._c_obj = c_obj
 
