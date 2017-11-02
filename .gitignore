@@ -3,3 +3,4 @@
 Cargo.lock
 *.swp
 ./test/libnvme_test
+*.pyc
