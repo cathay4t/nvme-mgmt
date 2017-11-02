@@ -4,7 +4,7 @@ WIP: NVMe management interface and tools
 ## Features
  * Rust create 'nvme-mgmt' with CLI and lib.
  * C library -- libnvme.so and libnvme.h
- * TODO: Python binding of libnvme
+ * Python binding of libnvme
 
 ## Compile and Test
 
