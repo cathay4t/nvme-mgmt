@@ -17,6 +17,8 @@ all: $(LIBS) $(TEST_EXEC)
 
 check: $(LIBS) $(TEST_EXEC)
 	sudo env LD_LIBRARY_PATH=$(_libnvme_so_dir) ./$(TEST_EXEC)
+	sudo env LD_LIBRARY_PATH=$(_libnvme_so_dir) \
+		python src/libnvme_for_python/libnvme.py
 
 clean:
 	rm -rf $(TEST_EXEC)
