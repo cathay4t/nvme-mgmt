@@ -1,5 +1,6 @@
 [package]
 name = "libnvme-c"
+description = "NVMe Management C interface"
 version = "0.1.0"
 authors = ["Gris Ge <fge@redhat.com>"]
 
@@ -9,5 +10,5 @@ path = "lib.rs"
 crate-type = ["cdylib"]
 
 [dependencies]
-nvme-mgmt = { path = "../nvme" }
+nvme = { path = "../nvme" }
 libc = "0.2.32"

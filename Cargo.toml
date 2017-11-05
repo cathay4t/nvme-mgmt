@@ -2,4 +2,5 @@
 members = [
     "src/nvme",
     "src/libnvme_for_c",
+    "src/cli",
 ]

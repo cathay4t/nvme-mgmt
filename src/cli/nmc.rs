@@ -17,14 +17,19 @@
  */
 extern crate nvme;
 
+/*
+ * /dev/nvme0 '$vendor' '$modele' '$capacity' '$health'
+ * \t$nsid /dev/nvme0n1 '$capacity'
+ */
+
 fn main() {
     let c = nvme::controller::from_path("/dev/nvme0").unwrap();
-    println!("VID: '{}'", c.get_vid());
-    println!("SN: '{}'", c.get_sn());
-    println!("MN: '{}'", c.get_mn());
-    println!("FR: '{}'", c.get_fr());
-    println!("RAB: '{}'", c.get_rab());
-    println!("IEEE: '{}'", c.get_ieee());
-    println!("FGUID: '{}'", c.get_fguid());
-    println!("SUBNQN: '{}'", c.get_subnqn());
+    println!("VID: '{}'", c.vid_get());
+    println!("SN: '{}'", c.sn_get());
+    println!("MN: '{}'", c.mn_get());
+    println!("FR: '{}'", c.fr_get());
+    println!("RAB: '{}'", c.rab_get());
+    println!("IEEE: '{}'", c.ieee_get());
+    println!("FGUID: '{}'", c.fguid_get());
+    println!("SUBNQN: '{}'", c.subnqn_get());
 }

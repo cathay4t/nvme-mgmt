@@ -53,7 +53,7 @@ pub extern fn nvme_ctrl_get(dev_path: *const c_char,
         }
     };
     let c = NvmeCtrlC {
-        sn: CString::new(c.get_sn()).unwrap().into_raw(),
+        sn: CString::new(c.sn_get()).unwrap().into_raw(),
     };
     unsafe {
         *cnt = Box::into_raw(Box::new(c));

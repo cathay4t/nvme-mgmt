@@ -1,5 +1,6 @@
 [package]
-name = "nvme-mgmt"
+name = "nvme"
+description = "NVMe Management Rust Interface"
 version = "0.1.0"
 authors = ["Gris Ge <fge@redhat.com>"]
 
@@ -7,10 +8,6 @@ authors = ["Gris Ge <fge@redhat.com>"]
 name = "nvme"
 path = "lib.rs"
 crate-type = ["lib"]
-
-[[bin]]
-name = "nvme-mgmt"
-path = "main.rs"
 
 [dependencies]
 nix = "0.9.0"

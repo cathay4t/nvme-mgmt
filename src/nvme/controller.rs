@@ -253,66 +253,66 @@ fn to_u32(i: [u8; 4]) -> u32 {
 }
 
 impl NvmeController {
-    pub fn get_vid(&self)       -> u16  { to_u16(self.raw_id_data.vid) }
-    pub fn get_ssvid(&self)     -> u16  { to_u16(self.raw_id_data.ssvid) }
-    pub fn get_sn(&self)        -> &str { & self.sn }
-    pub fn get_mn(&self)        -> &str { & self.mn }
-    pub fn get_fr(&self)        -> &str { & self.fr }
-    pub fn get_rab(&self)       -> u8   { self.raw_id_data.rab }
-    pub fn get_ieee(&self)      -> u32 { to_u32_a3(self.raw_id_data.ieee) }
-    pub fn get_cmic(&self)      -> u8 { self.raw_id_data.cmic }
-    pub fn get_mdts(&self)      -> u8 { self.raw_id_data.mdts }
-    pub fn get_cntlid(&self)    -> u16 { to_u16(self.raw_id_data.cntlid) }
-    pub fn get_ver(&self)       -> u32 { to_u32(self.raw_id_data.ver) }
-    pub fn get_rtd3r(&self)     -> u32 { to_u32(self.raw_id_data.rtd3e) }
-    pub fn get_rtd3e(&self)     -> u32 { to_u32(self.raw_id_data.rtd3r) }
-    pub fn get_oaes(&self)      -> u32 { to_u32(self.raw_id_data.oaes) }
-    pub fn get_ctratt(&self)    -> u32 { to_u32(self.raw_id_data.ctratt) }
-    pub fn get_fguid(&self)     -> &str { & self.fguid }
-    pub fn get_oacs(&self)      -> u16 { to_u16(self.raw_id_data.oacs) }
-    pub fn get_acl(&self)       -> u8 { self.raw_id_data.acl }
-    pub fn get_aerl(&self)      -> u8 { self.raw_id_data.aerl }
-    pub fn get_frmw(&self)      -> u8 { self.raw_id_data.frmw }
-    pub fn get_lpa(&self)       -> u8 { self.raw_id_data.lpa }
-    pub fn get_elpe(&self)      -> u8 { self.raw_id_data.elpe }
-    pub fn get_npss(&self)      -> u8 { self.raw_id_data.npss }
-    pub fn get_avscc(&self)     -> u8 { self.raw_id_data.avscc }
-    pub fn get_apsta(&self)     -> u8 { self.raw_id_data.apsta }
-    pub fn get_wctemp(&self)    -> u16 { to_u16(self.raw_id_data.wctemp) }
-    pub fn get_cctemp(&self)    -> u16 { to_u16(self.raw_id_data.cctemp) }
-    pub fn get_mtfa(&self)      -> u16 { to_u16(self.raw_id_data.mtfa) }
-    pub fn get_hmpre(&self)     -> u32 { to_u32(self.raw_id_data.hmpre) }
-    pub fn get_hmmin(&self)     -> u32 { to_u32(self.raw_id_data.hmmin) }
-    pub fn get_tnvmcap(&self)   -> &[u8; 16] { &self.raw_id_data.tnvmcap }
-    pub fn get_unvmcap(&self)   -> &[u8; 16] { &self.raw_id_data.unvmcap }
-    pub fn get_rpmbs(&self)     -> u32 { to_u32(self.raw_id_data.rpmbs) }
-    pub fn get_edstt(&self)     -> u16 { to_u16(self.raw_id_data.edstt) }
-    pub fn get_esto(&self)      -> u8 { self.raw_id_data.esto }
-    pub fn get_fwug(&self)      -> u8 { self.raw_id_data.fwug }
-    pub fn get_kas(&self)       -> u16 { to_u16(self.raw_id_data.kas) }
-    pub fn get_hctma(&self)     -> u16 { to_u16(self.raw_id_data.hctma) }
-    pub fn get_mntmt(&self)     -> u16 { to_u16(self.raw_id_data.mntmt) }
-    pub fn get_mxtmt(&self)     -> u16 { to_u16(self.raw_id_data.mxtmt) }
-    pub fn get_sanicap(&self)   -> u32 { to_u32(self.raw_id_data.sanicap) }
-    pub fn get_sqes(&self)      -> u8 { self.raw_id_data.sqes }
-    pub fn get_cqes(&self)      -> u8 { self.raw_id_data.cqes }
-    pub fn get_maxcmd(&self)    -> u16 { to_u16(self.raw_id_data.maxcmd) }
-    pub fn get_nn(&self)        -> u32 { to_u32(self.raw_id_data.nn) }
-    pub fn get_oncs(&self)      -> u16 { to_u16(self.raw_id_data.oncs) }
-    pub fn get_fuses(&self)     -> u16 { to_u16(self.raw_id_data.fuses) }
-    pub fn get_fna(&self)       -> u8 { self.raw_id_data.fna }
-    pub fn get_vwc(&self)       -> u8 { self.raw_id_data.vwc }
-    pub fn get_awun(&self)      -> u16 { to_u16(self.raw_id_data.awun) }
-    pub fn get_awupf(&self)     -> u16 { to_u16(self.raw_id_data.awupf) }
-    pub fn get_nvscc(&self)     -> u8 { self.raw_id_data.nvscc }
-    pub fn get_acwu(&self)      -> u16 { to_u16(self.raw_id_data.acwu) }
-    pub fn get_sgls(&self)      -> u32 { to_u32(self.raw_id_data.sgls) }
-    pub fn get_subnqn(&self)    -> &str { & self.subnqn }
-    pub fn get_ioccsz(&self)    -> u32 { to_u32(self.raw_id_data.ioccsz) }
-    pub fn get_iorcsz(&self)    -> u32 { to_u32(self.raw_id_data.iorcsz) }
-    pub fn get_icdoff(&self)    -> u16 { to_u16(self.raw_id_data.icdoff) }
-    pub fn get_ctrattr(&self)   -> u8 { self.raw_id_data.ctrattr }
-    pub fn get_msdbd(&self)     -> u8 { self.raw_id_data.msdbd }
+    pub fn vid_get(&self)       -> u16  { to_u16(self.raw_id_data.vid) }
+    pub fn ssvid_get(&self)     -> u16  { to_u16(self.raw_id_data.ssvid) }
+    pub fn sn_get(&self)        -> &str { & self.sn }
+    pub fn mn_get(&self)        -> &str { & self.mn }
+    pub fn fr_get(&self)        -> &str { & self.fr }
+    pub fn rab_get(&self)       -> u8   { self.raw_id_data.rab }
+    pub fn ieee_get(&self)      -> u32 { to_u32_a3(self.raw_id_data.ieee) }
+    pub fn cmic_get(&self)      -> u8 { self.raw_id_data.cmic }
+    pub fn mdts_get(&self)      -> u8 { self.raw_id_data.mdts }
+    pub fn cntlid_get(&self)    -> u16 { to_u16(self.raw_id_data.cntlid) }
+    pub fn ver_get(&self)       -> u32 { to_u32(self.raw_id_data.ver) }
+    pub fn rtd3r_get(&self)     -> u32 { to_u32(self.raw_id_data.rtd3e) }
+    pub fn rtd3e_get(&self)     -> u32 { to_u32(self.raw_id_data.rtd3r) }
+    pub fn oaes_get(&self)      -> u32 { to_u32(self.raw_id_data.oaes) }
+    pub fn ctratt_get(&self)    -> u32 { to_u32(self.raw_id_data.ctratt) }
+    pub fn fguid_get(&self)     -> &str { & self.fguid }
+    pub fn oacs_get(&self)      -> u16 { to_u16(self.raw_id_data.oacs) }
+    pub fn acl_get(&self)       -> u8 { self.raw_id_data.acl }
+    pub fn aerl_get(&self)      -> u8 { self.raw_id_data.aerl }
+    pub fn frmw_get(&self)      -> u8 { self.raw_id_data.frmw }
+    pub fn lpa_get(&self)       -> u8 { self.raw_id_data.lpa }
+    pub fn elpe_get(&self)      -> u8 { self.raw_id_data.elpe }
+    pub fn npss_get(&self)      -> u8 { self.raw_id_data.npss }
+    pub fn avscc_get(&self)     -> u8 { self.raw_id_data.avscc }
+    pub fn apsta_get(&self)     -> u8 { self.raw_id_data.apsta }
+    pub fn wctemp_get(&self)    -> u16 { to_u16(self.raw_id_data.wctemp) }
+    pub fn cctemp_get(&self)    -> u16 { to_u16(self.raw_id_data.cctemp) }
+    pub fn mtfa_get(&self)      -> u16 { to_u16(self.raw_id_data.mtfa) }
+    pub fn hmpre_get(&self)     -> u32 { to_u32(self.raw_id_data.hmpre) }
+    pub fn hmmin_get(&self)     -> u32 { to_u32(self.raw_id_data.hmmin) }
+    pub fn tnvmcap_get(&self)   -> &[u8; 16] { &self.raw_id_data.tnvmcap }
+    pub fn unvmcap_get(&self)   -> &[u8; 16] { &self.raw_id_data.unvmcap }
+    pub fn rpmbs_get(&self)     -> u32 { to_u32(self.raw_id_data.rpmbs) }
+    pub fn edstt_get(&self)     -> u16 { to_u16(self.raw_id_data.edstt) }
+    pub fn esto_get(&self)      -> u8 { self.raw_id_data.esto }
+    pub fn fwug_get(&self)      -> u8 { self.raw_id_data.fwug }
+    pub fn kas_get(&self)       -> u16 { to_u16(self.raw_id_data.kas) }
+    pub fn hctma_get(&self)     -> u16 { to_u16(self.raw_id_data.hctma) }
+    pub fn mntmt_get(&self)     -> u16 { to_u16(self.raw_id_data.mntmt) }
+    pub fn mxtmt_get(&self)     -> u16 { to_u16(self.raw_id_data.mxtmt) }
+    pub fn sanicap_get(&self)   -> u32 { to_u32(self.raw_id_data.sanicap) }
+    pub fn sqes_get(&self)      -> u8 { self.raw_id_data.sqes }
+    pub fn cqes_get(&self)      -> u8 { self.raw_id_data.cqes }
+    pub fn maxcmd_get(&self)    -> u16 { to_u16(self.raw_id_data.maxcmd) }
+    pub fn nn_get(&self)        -> u32 { to_u32(self.raw_id_data.nn) }
+    pub fn oncs_get(&self)      -> u16 { to_u16(self.raw_id_data.oncs) }
+    pub fn fuses_get(&self)     -> u16 { to_u16(self.raw_id_data.fuses) }
+    pub fn fna_get(&self)       -> u8 { self.raw_id_data.fna }
+    pub fn vwc_get(&self)       -> u8 { self.raw_id_data.vwc }
+    pub fn awun_get(&self)      -> u16 { to_u16(self.raw_id_data.awun) }
+    pub fn awupf_get(&self)     -> u16 { to_u16(self.raw_id_data.awupf) }
+    pub fn nvscc_get(&self)     -> u8 { self.raw_id_data.nvscc }
+    pub fn acwu_get(&self)      -> u16 { to_u16(self.raw_id_data.acwu) }
+    pub fn sgls_get(&self)      -> u32 { to_u32(self.raw_id_data.sgls) }
+    pub fn subnqn_get(&self)    -> &str { & self.subnqn }
+    pub fn ioccsz_get(&self)    -> u32 { to_u32(self.raw_id_data.ioccsz) }
+    pub fn iorcsz_get(&self)    -> u32 { to_u32(self.raw_id_data.iorcsz) }
+    pub fn icdoff_get(&self)    -> u16 { to_u16(self.raw_id_data.icdoff) }
+    pub fn ctrattr_get(&self)   -> u8 { self.raw_id_data.ctrattr }
+    pub fn msdbd_get(&self)     -> u8 { self.raw_id_data.msdbd }
 }
 
 pub fn from_path(blk_path: &str) -> Result<NvmeController> {
