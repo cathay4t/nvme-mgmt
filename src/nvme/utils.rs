@@ -15,21 +15,3 @@
  *
  * Author: Gris Ge <fge@redhat.com>
  */
-
-#[macro_use]
-extern crate nix;
-#[macro_use]
-extern crate error_chain;
-extern crate byteorder;
-extern crate libc;
-
-pub use self::controller::{NvmeController};
-pub use self::namespace::NvmeNameSpace;
-pub use self::error::{Error, ErrorKind};
-
-mod error;
-mod controller;
-mod ioctl;
-mod namespace;
-mod utils;
-mod spec;

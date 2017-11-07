@@ -16,6 +16,12 @@
  * Author: Gris Ge <fge@redhat.com>
  */
 
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::os::unix::io::AsRawFd;
+
+use super::error::*;
+
 #[repr(C, packed)]
 #[derive(Default)]
 // Copy from /usr/include/linux/nvme_ioctl.h
@@ -43,6 +49,17 @@ pub struct NvmeAdminCmd {
 const NVME_IOC_MAGIC: u8 = b'N';
 const NVME_IOC_ADMIN_CMD: u8 = 0x41;
 
-ioctl!(readwrite_buf nvme_ioctl_admin_cmd with
+ioctl!(readwrite_buf _nvme_ioctl_admin_cmd with
        NVME_IOC_MAGIC, NVME_IOC_ADMIN_CMD;
        NvmeAdminCmd);
+
+pub(crate) fn nvme_ioctl_fd_open(blk_path: &str) -> Result<File> {
+    Ok(OpenOptions::new().read(true).open(blk_path)?)
+}
+
+pub(crate) fn nvme_ioctl_admin_cmd(fd: &File,
+                                   nvme_cmd: NvmeAdminCmd) -> Result<()> {
+    let fd_raw: i32 = AsRawFd::as_raw_fd(fd);
+    unsafe {_nvme_ioctl_admin_cmd(fd_raw, &mut [nvme_cmd])?;}
+    Ok(())
+}

@@ -18,6 +18,14 @@
 
 error_chain! {
     errors {
+        InvalidArgument(msg: String) {
+            description("Invalid argument")
+            display("Invalid argument: '{}'", msg)
+        }
+        PermissionDenied(msg: String) {
+            description("Permission deny")
+            display("Permission deny: '{}'", msg)
+        }
         LibBug(msg: String) {
             description("Library bug")
             display("Library bug: '{}'", msg)
@@ -28,7 +36,31 @@ error_chain! {
     foreign_links {
         FromUtf8Error(::std::string::FromUtf8Error);
         Utf8Error(::std::str::Utf8Error);
-        NixError(::nix::Error);
-        IoError(::std::io::Error);
+//        NixError(::nix::Error);
+    }
+}
+
+impl From<::std::io::Error> for Error {
+    fn from(e: ::std::io::Error) -> Self {
+        match e.kind() {
+            ::std::io::ErrorKind::NotFound =>
+                ErrorKind::InvalidArgument(format!("{}", e)).into(),
+            ::std::io::ErrorKind::PermissionDenied =>
+                ErrorKind::PermissionDenied(format!("{}", e)).into(),
+            _ => ErrorKind::LibBug(format!("{}", e)).into()
+        }
+    }
+}
+
+impl From<::nix::Error> for Error {
+    fn from(e: ::nix::Error) -> Self {
+        match e {
+            ::nix::Error::Sys(errno) =>
+                ErrorKind::LibBug(format!("ioctl failed: {}", errno)).into(),
+            ::nix::Error::InvalidPath =>
+                ErrorKind::InvalidArgument(format!("Invalid path: {}", e))
+                .into(),
+            _ => ErrorKind::LibBug(format!("{}", e)).into()
+        }
     }
 }

@@ -16,20 +16,27 @@
  * Author: Gris Ge <fge@redhat.com>
  */
 extern crate nvme;
+//#[macro_use] extern crate prettytable;
 
 /*
- * /dev/nvme0 '$vendor' '$modele' '$capacity' '$health'
- * \t$nsid /dev/nvme0n1 '$capacity'
+ * /dev/nvme0n1 '$vendor' '$modele' '$capacity' '$health'
  */
 
 fn main() {
-    let c = nvme::controller::from_path("/dev/nvme0").unwrap();
-    println!("VID: '{}'", c.vid_get());
-    println!("SN: '{}'", c.sn_get());
-    println!("MN: '{}'", c.mn_get());
-    println!("FR: '{}'", c.fr_get());
-    println!("RAB: '{}'", c.rab_get());
-    println!("IEEE: '{}'", c.ieee_get());
-    println!("FGUID: '{}'", c.fguid_get());
-    println!("SUBNQN: '{}'", c.subnqn_get());
+    let ctrls = nvme::NvmeController::get_all().unwrap();
+    for c in ctrls {
+        println!("{}:", c.blk_path_get());
+        println!("\tVID: '{}'", c.vid_get());
+        println!("\tSN: '{}'", c.sn_get());
+        println!("\tMN: '{}'", c.mn_get());
+        println!("\tFR: '{}'", c.fr_get());
+        println!("\tRAB: '{}'", c.rab_get());
+        println!("\tIEEE: '{}'", c.ieee_get());
+        println!("\tFGUID: '{}'", c.fguid_get());
+        println!("\tSUBNQN: '{}'", c.subnqn_get());
+        println!("\tCNTLID: '{}'", c.cntlid_get());
+        println!("\tVER: '{}'", c.ver_str_get());
+        println!("\tNN: '{}'", c.nn_get());
+        println!("\tCQES: '{}'", c.cqes_get());
+    }
 }

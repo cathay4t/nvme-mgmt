@@ -43,7 +43,7 @@ pub extern fn nvme_ctrl_get(dev_path: *const c_char,
     let dev_path = unsafe {
         CStr::from_ptr(dev_path)
     }.to_str().unwrap();
-    let c = match nvme::controller::from_path(dev_path) {
+    let c = match nvme::NvmeController::from_path(dev_path) {
         Ok(c) => c,
         Err(e) => {
             rc = NVME_LIBBUG;

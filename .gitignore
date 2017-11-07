@@ -2,5 +2,6 @@
 **/*.rs.bk
 Cargo.lock
 *.swp
-./test/libnvme_test
+test/libnvme_test
 *.pyc
+rusty-tags.vi
