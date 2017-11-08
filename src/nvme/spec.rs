@@ -16,6 +16,9 @@
  * Author: Gris Ge <fge@redhat.com>
  */
 
+pub(crate) const MAX_LBA_FORMAT_COUNT: usize = 16;
+/* Maximum 16 LBA format is allowed */
+
 #[repr(C, packed)]
 #[derive(Copy, Clone)]
 pub(crate) struct NvmeSpecPsd {
@@ -257,8 +260,43 @@ pub(crate) struct NvmeSpecIdNsData {
     pub(crate) reserved_0:          [u8; 40],
     pub(crate) nguid:               [u8; 16],
     pub(crate) eui64:               [u8; 8],
-    pub(crate) lbafs:               [NvmeSpecLbaf; 16],
+    pub(crate) lbafs:               [NvmeSpecLbaf; MAX_LBA_FORMAT_COUNT],
     pub(crate) reserved_1:          [u8; 192],
     pub(crate) vendor_specific:     [u8; 3712],
+}
+
+impl Default for NvmeSpecIdNsData {
+    fn default() -> NvmeSpecIdNsData {
+        NvmeSpecIdNsData {
+            nsze:                [0; 8],
+            ncap:                [0; 8],
+            nuse:                [0; 8],
+            nsfeat:              0,
+            nlbaf:               0,
+            flbas:               0,
+            mc:                  0,
+            dpc:                 0,
+            dps:                 0,
+            nmic:                0,
+            rescap:              0,
+            fpi:                 0,
+            elfeat:              0,
+            nawun:               [0; 2],
+            nawupf:              [0; 2],
+            nacwu:               [0; 2],
+            nabsn:               [0; 2],
+            nabo:                [0; 2],
+            nabspf:              [0; 2],
+            noiob:               [0; 2],
+            nvmcap:              [0; 16],
+            reserved_0:          [0; 40],
+            nguid:               [0; 16],
+            eui64:               [0; 8],
+            lbafs:               [Default::default(); MAX_LBA_FORMAT_COUNT],
+            reserved_1:          [0; 192],
+            vendor_specific:     [0; 3712],
+
+        }
+    }
 }
 

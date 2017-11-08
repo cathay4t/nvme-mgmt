@@ -30,13 +30,16 @@ error_chain! {
             description("Library bug")
             display("Library bug: '{}'", msg)
         }
+        NotSupported(msg: String) {
+            description("Not supported")
+            display("Not supported: '{}'", msg)
+        }
     }
 
     // TODO(Gris Ge): Should use From to map everthing into LibBug
     foreign_links {
         FromUtf8Error(::std::string::FromUtf8Error);
         Utf8Error(::std::str::Utf8Error);
-//        NixError(::nix::Error);
     }
 }
 

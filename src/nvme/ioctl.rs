@@ -22,6 +22,9 @@ use std::os::unix::io::AsRawFd;
 
 use super::error::*;
 
+pub(crate) const NVME_IOC_CMD_IDENTIFY: u8          = 0x06;
+
+
 #[repr(C, packed)]
 #[derive(Default)]
 // Copy from /usr/include/linux/nvme_ioctl.h

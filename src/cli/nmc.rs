@@ -16,27 +16,57 @@
  * Author: Gris Ge <fge@redhat.com>
  */
 extern crate nvme;
-//#[macro_use] extern crate prettytable;
+#[macro_use] extern crate prettytable;
+
+use nvme::NvmeController;
+use prettytable::Table;
+use prettytable::format::consts::FORMAT_CLEAN;
 
 /*
- * /dev/nvme0n1 '$vendor' '$modele' '$capacity' '$health'
+ * /dev/nvme0n1 '$modele' '$capacity' 'temp' '$health'
  */
 
-fn main() {
-    let ctrls = nvme::NvmeController::get_all().unwrap();
-    for c in ctrls {
-        println!("{}:", c.blk_path_get());
-        println!("\tVID: '{}'", c.vid_get());
-        println!("\tSN: '{}'", c.sn_get());
-        println!("\tMN: '{}'", c.mn_get());
-        println!("\tFR: '{}'", c.fr_get());
-        println!("\tRAB: '{}'", c.rab_get());
-        println!("\tIEEE: '{}'", c.ieee_get());
-        println!("\tFGUID: '{}'", c.fguid_get());
-        println!("\tSUBNQN: '{}'", c.subnqn_get());
-        println!("\tCNTLID: '{}'", c.cntlid_get());
-        println!("\tVER: '{}'", c.ver_str_get());
-        println!("\tNN: '{}'", c.nn_get());
-        println!("\tCQES: '{}'", c.cqes_get());
+struct DisplayEntry {
+    blk_path:       String,
+    wwid:           String,
+    firmware:       String,
+    model:          String,
+    size:           String,
+}
+
+fn quick_info_display(quick_info: Vec<DisplayEntry>) {
+    let mut table = Table::new();
+
+    table.set_format(*FORMAT_CLEAN);
+    for entry in quick_info {
+        table.add_row(row![entry.blk_path, entry.wwid, entry.model,
+                           entry.firmware, entry.size]);
     }
+
+    table.printstd();
+}
+
+fn main() {
+    let ctrls = NvmeController::get_all().unwrap();
+    let mut quick_info: Vec<DisplayEntry> = Vec::new();
+    for c in ctrls {
+        let nss = c.namespaces_get().unwrap();
+        for ns in nss {
+            let mut wwid = ns.nguid_get();
+            if wwid.len() == 0 {
+                wwid = ns.eui64_get();
+            }
+            if wwid.len() == 0 {
+                wwid = "0000000000000000";
+            }
+            quick_info.push(DisplayEntry{
+                blk_path:   format!("{}", ns.blk_path_get()),
+                model:      format!("{}", c.mn_get()),
+                size:       nvme::size_bytes_2_size_human(ns.size_get()),
+                wwid:       wwid.to_string(),
+                firmware:   format!("{}", c.fr_get()),
+            });
+        }
+    }
+    quick_info_display(quick_info);
 }

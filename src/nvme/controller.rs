@@ -21,15 +21,15 @@ use std::path::Path;
 use std::fs::read_dir;
 use std::mem::size_of;
 use std::str;
-use byteorder::{ByteOrder, LittleEndian};
 
 use super::error::*;
+use super::ioctl::*;
 use super::spec::{NvmeSpecIdCtrlData};
 use super::namespace::NvmeNameSpace;
+use super::utils::{to_u16, u24_to_u32, to_u32};
 
 static SYSFS_NVME_CTRL_FOLDER: &'static str = "/sys/class/nvme/";
 
-const NVME_IOC_CMD_IDENTIFY: u8 = 0x06;
 const NVME_ADMIN_CMD_CNS_ALL_CTRL: u32 = 0x01;
 
 pub struct NvmeController {
@@ -46,18 +46,6 @@ pub struct NvmeController {
     blk_path:                   String,
 }
 
-fn to_u16(i: [u8; 2]) -> u16 {
-    LittleEndian::read_u16(&i)
-}
-
-fn to_u32_a3(i: [u8; 3]) -> u32 {
-    LittleEndian::read_u24(&i)
-}
-
-fn to_u32(i: [u8; 4]) -> u32 {
-    LittleEndian::read_u32(&i)
-}
-
 impl NvmeController {
     pub fn blk_path_get(&self)  -> &str { &self.blk_path }
     pub fn vid_get(&self)       -> u16  { to_u16(self.raw_id_data.vid) }
@@ -66,7 +54,7 @@ impl NvmeController {
     pub fn mn_get(&self)        -> &str { &self.mn }
     pub fn fr_get(&self)        -> &str { &self.fr }
     pub fn rab_get(&self)       -> u8   { self.raw_id_data.rab }
-    pub fn ieee_get(&self)      -> u32 { to_u32_a3(self.raw_id_data.ieee) }
+    pub fn ieee_get(&self)      -> u32 { u24_to_u32(self.raw_id_data.ieee) }
     pub fn cmic_get(&self)      -> u8 { self.raw_id_data.cmic }
     pub fn mdts_get(&self)      -> u8 { self.raw_id_data.mdts }
     pub fn cntlid_get(&self)    -> u16 { to_u16(self.raw_id_data.cntlid) }
@@ -122,7 +110,7 @@ impl NvmeController {
     pub fn msdbd_get(&self)     -> u8 { self.raw_id_data.msdbd }
 
     pub fn ver_gen(major: u16, minor: u8, tertiary: u8) -> u32 {
-        (major << 16 + minor << 8 + tertiary) as u32
+        ((major as u32) << 16 + (minor as u32) << 8 + tertiary) as u32
     }
 
     pub fn ver_str_get(&self)   -> &str { &self.ver_str }
@@ -130,16 +118,18 @@ impl NvmeController {
     pub fn namespaces_get(&self) -> Result<Vec<NvmeNameSpace>> {
         let mut ret = Vec::new();
         let blk_path = self.blk_path_get();
-        let ns_ids = NvmeNameSpace::ns_id_list_get(blk_path, self)?;
-        for ns_id in ns_ids {
-            ret.push(NvmeNameSpace::new(blk_path, self, ns_id)?);
+        let nsids = NvmeNameSpace::nsid_list_get(blk_path, self)?;
+        for nsid in nsids {
+            let ns = NvmeNameSpace::new(blk_path, self, nsid)?;
+            if ns.blk_path_get().len() == 0 {
+                continue;
+            }
+            ret.push(ns);
         }
         Ok(ret)
     }
 
     pub fn from_path(blk_path: &str) -> Result<NvmeController> {
-        let path =  Path::new(blk_path);
-
         let fd = nvme_ioctl_fd_open(blk_path)?;
 
         let mut id_data: NvmeSpecIdCtrlData = Default::default();
