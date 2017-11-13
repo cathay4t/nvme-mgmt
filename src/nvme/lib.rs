@@ -18,15 +18,13 @@
 
 #[macro_use]
 extern crate nix;
-#[macro_use]
-extern crate error_chain;
 extern crate byteorder;
 extern crate libc;
 extern crate regex;
 
 pub use self::controller::{NvmeController};
 pub use self::namespace::NvmeNameSpace;
-pub use self::error::{Error, ErrorKind};
+pub use self::error::{NvmeError, ErrorKind};
 pub use self::utils::size_bytes_2_size_human;
 
 mod error;

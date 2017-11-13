@@ -15,35 +15,64 @@
  *
  * Author: Gris Ge <fge@redhat.com>
  */
+use std::result;
+use std::fmt;
 
-error_chain! {
-    errors {
-        InvalidArgument(msg: String) {
-            description("Invalid argument")
-            display("Invalid argument: '{}'", msg)
-        }
-        PermissionDenied(msg: String) {
-            description("Permission deny")
-            display("Permission deny: '{}'", msg)
-        }
-        LibBug(msg: String) {
-            description("Library bug")
-            display("Library bug: '{}'", msg)
-        }
-        NotSupported(msg: String) {
-            description("Not supported")
-            display("Not supported: '{}'", msg)
-        }
-    }
+#[derive(Debug)]
+pub enum ErrorKind {
+    LibBug(String),
+    InvalidArgument(String),
+    PermissionDenied(String),
+    CorruptedData(String),
+}
 
-    // TODO(Gris Ge): Should use From to map everthing into LibBug
-    foreign_links {
-        FromUtf8Error(::std::string::FromUtf8Error);
-        Utf8Error(::std::str::Utf8Error);
+#[derive(Debug)]
+pub struct NvmeError {
+    pub kind:       ErrorKind,
+}
+
+pub type Result<T> = result::Result<T, NvmeError>;
+
+
+impl From<ErrorKind> for NvmeError {
+    fn from(ek: ErrorKind) -> NvmeError {
+        NvmeError{kind: ek}
     }
 }
 
-impl From<::std::io::Error> for Error {
+impl fmt::Display for NvmeError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", match self.kind {
+            ErrorKind::LibBug(ref x) => x,
+            ErrorKind::InvalidArgument(ref x) => x,
+            ErrorKind::PermissionDenied(ref x) => x,
+            ErrorKind::CorruptedData(ref x) => x,
+        })
+    }
+}
+
+
+impl ::std::error::Error for NvmeError {
+    fn description(&self) -> &str {
+        match self.kind {
+            ErrorKind::LibBug(_) => "Library bug",
+            ErrorKind::InvalidArgument(_) => "Invalid argument",
+            ErrorKind::PermissionDenied(_) => "Permission denied",
+            ErrorKind::CorruptedData(_) =>
+                "Corrupted data from NVMe controller",
+        }
+    }
+}
+
+
+impl From<::std::str::Utf8Error> for NvmeError {
+    fn from(e: ::std::str::Utf8Error) -> Self {
+        // TODO
+        ErrorKind::LibBug(format!("{}", e)).into()
+    }
+}
+
+impl From<::std::io::Error> for NvmeError {
     fn from(e: ::std::io::Error) -> Self {
         match e.kind() {
             ::std::io::ErrorKind::NotFound =>
@@ -55,7 +84,7 @@ impl From<::std::io::Error> for Error {
     }
 }
 
-impl From<::nix::Error> for Error {
+impl From<::nix::Error> for NvmeError {
     fn from(e: ::nix::Error) -> Self {
         match e {
             ::nix::Error::Sys(errno) =>
